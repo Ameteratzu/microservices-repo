@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  microservice1:
+    build: ./microservice1
+    ports:
+      - "8001:8000"
+  microservice2:
+    build: ./microservice2
+    ports:
+      - "8002:8000"
+  microservice3:
+    build: ./microservice3
+    ports:
+      - "8003:8000"

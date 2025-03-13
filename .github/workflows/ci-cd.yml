@@ -1,0 +1,46 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+  pull_request:
+    branches:
+      - develop
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+    
+    - name: Run tests
+      run: |
+        pytest
+    
+    - name: Build Docker images
+      run: |
+        docker-compose build
+    
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Deploy microservices to Azure App Services
+      run: |
+        az webapp up --name microservice1 --resource-group MyResourceGroup --plan MyAppServicePlan
+        az webapp up --name microservice2 --resource-group MyResourceGroup --plan MyAppServicePlan
+        az webapp up --name microservice3 --resource-group MyResourceGroup --plan MyAppServicePlan
